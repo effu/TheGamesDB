@@ -1,0 +1,137 @@
+[09-Feb-2018 19:30:08 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysql_real_escape_string() in D:\web\www\thegamesdb\modules\mod_main.php:9
+Stack trace:
+#0 D:\web\www\thegamesdb\index.php(18): include()
+#1 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#2 {main}
+  thrown in D:\web\www\thegamesdb\modules\mod_main.php on line 9
+[09-Feb-2018 19:32:43 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\modules\mod_main.php on line 15
+[09-Feb-2018 19:32:43 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysql_real_escape_string() in D:\web\www\thegamesdb\tab_game.php:91
+Stack trace:
+#0 D:\web\www\thegamesdb\index.php(49): include()
+#1 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#2 {main}
+  thrown in D:\web\www\thegamesdb\tab_game.php on line 91
+[09-Feb-2018 19:35:50 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\modules\mod_main.php on line 15
+[09-Feb-2018 19:35:50 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysql_real_escape_string() in D:\web\www\thegamesdb\tab_game.php:91
+Stack trace:
+#0 D:\web\www\thegamesdb\index.php(49): include()
+#1 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#2 {main}
+  thrown in D:\web\www\thegamesdb\tab_game.php on line 91
+[09-Feb-2018 19:36:48 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\modules\mod_main.php on line 15
+[09-Feb-2018 19:36:48 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\modules\mod_main.php on line 15
+[09-Feb-2018 19:36:48 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\modules\mod_main.php on line 15
+[09-Feb-2018 19:36:48 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\modules\mod_main.php on line 15
+[09-Feb-2018 19:36:48 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysql_real_escape_string() in D:\web\www\thegamesdb\tab_game.php:91
+Stack trace:
+#0 D:\web\www\thegamesdb\index.php(49): include()
+#1 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#2 {main}
+  thrown in D:\web\www\thegamesdb\tab_game.php on line 91
+[09-Feb-2018 19:37:51 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\modules\mod_main.php on line 15
+[09-Feb-2018 19:37:51 UTC] PHP Notice:  Undefined variable: errormessage in D:\web\www\thegamesdb\tab_game.php on line 101
+[09-Feb-2018 19:37:51 UTC] PHP Notice:  Undefined variable: message in D:\web\www\thegamesdb\tab_game.php on line 104
+[09-Feb-2018 19:37:51 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 151
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 167
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 183
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 183
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 265
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 284
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 284
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 289
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 294
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 294
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 299
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 299
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 299
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 351
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 357
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 357
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 357
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Trying to get property of non-object in D:\web\www\thegamesdb\tab_game.php on line 357
+[09-Feb-2018 19:37:52 UTC] PHP Notice:  Undefined variable: database in D:\web\www\thegamesdb\tab_game.php on line 80
+[09-Feb-2018 19:37:52 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on null in D:\web\www\thegamesdb\tab_game.php:80
+Stack trace:
+#0 D:\web\www\thegamesdb\tab_game.php(357): imageUsername(NULL)
+#1 D:\web\www\thegamesdb\index.php(49): include('D:\\web\\www\\theg...')
+#2 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#3 {main}
+  thrown in D:\web\www\thegamesdb\tab_game.php on line 80
+[09-Feb-2018 19:38:22 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on null in D:\web\www\thegamesdb\tab_game.php:80
+Stack trace:
+#0 D:\web\www\thegamesdb\tab_game.php(357): imageUsername(NULL)
+#1 D:\web\www\thegamesdb\index.php(49): include('D:\\web\\www\\theg...')
+#2 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#3 {main}
+  thrown in D:\web\www\thegamesdb\tab_game.php on line 80
+[09-Feb-2018 19:39:29 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on null in D:\web\www\thegamesdb\tab_game.php:80
+Stack trace:
+#0 D:\web\www\thegamesdb\tab_game.php(357): imageUsername(NULL)
+#1 D:\web\www\thegamesdb\index.php(49): include('D:\\web\\www\\theg...')
+#2 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#3 {main}
+  thrown in D:\web\www\thegamesdb\tab_game.php on line 80
+[09-Feb-2018 19:39:37 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on null in D:\web\www\thegamesdb\tab_game.php:80
+Stack trace:
+#0 D:\web\www\thegamesdb\tab_game.php(357): imageUsername(NULL)
+#1 D:\web\www\thegamesdb\index.php(49): include('D:\\web\\www\\theg...')
+#2 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#3 {main}
+  thrown in D:\web\www\thegamesdb\tab_game.php on line 80
+[09-Feb-2018 19:39:58 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysql_fetch_array() in D:\web\www\thegamesdb\tab_game.php:617
+Stack trace:
+#0 D:\web\www\thegamesdb\index.php(49): include()
+#1 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#2 {main}
+  thrown in D:\web\www\thegamesdb\tab_game.php on line 617
+[09-Feb-2018 19:43:14 UTC] PHP Notice:  Undefined variable: baseurl in D:\web\www\thegamesdb\mailshare.php on line 8
+[09-Feb-2018 19:43:14 UTC] PHP Notice:  Undefined variable: baseurl in D:\web\www\thegamesdb\mailshare.php on line 9
+[09-Feb-2018 19:43:14 UTC] PHP Notice:  Undefined variable: baseurl in D:\web\www\thegamesdb\mailshare.php on line 10
+[09-Feb-2018 19:43:14 UTC] PHP Notice:  Undefined variable: baseurl in D:\web\www\thegamesdb\mailshare.php on line 11
+[09-Feb-2018 19:43:14 UTC] PHP Notice:  Undefined variable: baseurl in D:\web\www\thegamesdb\mailshare.php on line 14
+[09-Feb-2018 19:43:14 UTC] PHP Notice:  Undefined variable: baseurl in D:\web\www\thegamesdb\mailshare.php on line 14
+[09-Feb-2018 19:43:14 UTC] PHP Notice:  Undefined variable: url in D:\web\www\thegamesdb\mailshare.php on line 32
+[09-Feb-2018 19:43:14 UTC] PHP Notice:  Undefined variable: urlsubject in D:\web\www\thegamesdb\mailshare.php on line 48
+[09-Feb-2018 19:43:14 UTC] PHP Notice:  Undefined variable: url in D:\web\www\thegamesdb\mailshare.php on line 49
+[09-Feb-2018 19:44:01 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysql_real_escape_string() in D:\web\www\thegamesdb\modules\mod_main.php:52
+Stack trace:
+#0 D:\web\www\thegamesdb\index.php(18): include()
+#1 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#2 {main}
+  thrown in D:\web\www\thegamesdb\modules\mod_main.php on line 52
+[09-Feb-2018 19:47:51 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysql_fetch_array() in D:\web\www\thegamesdb\tab_game.php:617
+Stack trace:
+#0 D:\web\www\thegamesdb\index.php(49): include()
+#1 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#2 {main}
+  thrown in D:\web\www\thegamesdb\tab_game.php on line 617
+[09-Feb-2018 19:47:57 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysql_fetch_array() in D:\web\www\thegamesdb\tab_game.php:617
+Stack trace:
+#0 D:\web\www\thegamesdb\index.php(49): include()
+#1 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#2 {main}
+  thrown in D:\web\www\thegamesdb\tab_game.php on line 617
+[09-Feb-2018 20:00:00 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysql_fetch_array() in D:\web\www\thegamesdb\tab_game.php:617
+Stack trace:
+#0 D:\web\www\thegamesdb\index.php(49): include()
+#1 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#2 {main}
+  thrown in D:\web\www\thegamesdb\tab_game.php on line 617
+[09-Feb-2018 20:00:17 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysql_fetch_array() in D:\web\www\thegamesdb\tab_game.php:617
+Stack trace:
+#0 D:\web\www\thegamesdb\index.php(49): include()
+#1 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#2 {main}
+  thrown in D:\web\www\thegamesdb\tab_game.php on line 617
+[09-Feb-2018 20:02:13 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysql_fetch_array() in D:\web\www\thegamesdb\tab_game.php:617
+Stack trace:
+#0 D:\web\www\thegamesdb\index.php(49): include()
+#1 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#2 {main}
+  thrown in D:\web\www\thegamesdb\tab_game.php on line 617
+[09-Feb-2018 20:02:17 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysql_fetch_array() in D:\web\www\thegamesdb\tab_game.php:617
+Stack trace:
+#0 D:\web\www\thegamesdb\index.php(49): include()
+#1 C:\Users\efful\AppData\Roaming\Composer\vendor\cretueusebiu\valet-windows\server.php(132): require('D:\\web\\www\\theg...')
+#2 {main}
+  thrown in D:\web\www\thegamesdb\tab_game.php on line 617

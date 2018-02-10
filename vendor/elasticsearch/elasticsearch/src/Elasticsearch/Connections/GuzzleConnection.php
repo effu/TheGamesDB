@@ -9,6 +9,7 @@ namespace Elasticsearch\Connections;
 
 
 use Elasticsearch\Common\Exceptions\AlreadyExpiredException;
+use Elasticsearch\Common\Exceptions\Authentication401Exception;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Elasticsearch\Common\Exceptions\Conflict409Exception;
 use Elasticsearch\Common\Exceptions\Forbidden403Exception;
@@ -23,7 +24,7 @@ use \Guzzle\Http\Client;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Exception\ServerErrorResponseException;
-use Guzzle\Http\Message\Header\HeaderCollection;
+use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\Request;
 use Guzzle\Http\Message\Response;
 use Psr\Log\LoggerInterface;
@@ -33,12 +34,11 @@ class GuzzleConnection extends AbstractConnection implements ConnectionInterface
     /** @var  Client */
     private $guzzle;
 
-    private $connectionOpts = array();
+    private $lastRequest = array();
 
 
     /**
-     * @param string                   $host             Host string
-     * @param int                      $port             Host port
+     * @param array                    $hostDetails
      * @param array                    $connectionParams Array of connection parameters
      * @param \Psr\Log\LoggerInterface $log              logger object
      * @param \Psr\Log\LoggerInterface $trace            logger object (for curl traces)
@@ -46,23 +46,29 @@ class GuzzleConnection extends AbstractConnection implements ConnectionInterface
      * @throws \Elasticsearch\Common\Exceptions\InvalidArgumentException
      * @return \Elasticsearch\Connections\GuzzleConnection
      */
-    public function __construct($host, $port, $connectionParams, LoggerInterface $log, LoggerInterface $trace)
+    public function __construct($hostDetails, $connectionParams, LoggerInterface $log, LoggerInterface $trace)
     {
         if (isset($connectionParams['guzzleClient']) !== true) {
             $log->critical('guzzleClient must be set in connectionParams');
             throw new InvalidArgumentException('guzzleClient must be set in connectionParams');
         }
 
-        if (isset($port) !== true) {
-            $port = 9200;
+        if (isset($hostDetails['port']) !== true) {
+            $hostDetails['port'] = 9200;
         }
+
+        if (isset($hostDetails['scheme']) !== true) {
+            $hostDetails['scheme'] = 'http';
+        }
+
         $this->guzzle = $connectionParams['guzzleClient'];
+        unset($connectionParams['guzzleClient']);
 
         if (isset($connectionParams['connectionParams'])) {
-            $this->connectionOpts = $connectionParams['connectionParams'];
+            $this->connectionParams += $connectionParams['connectionParams'];
         }
 
-        return parent::__construct($host, $port, $connectionParams, $log, $trace);
+        parent::__construct($hostDetails, $connectionParams, $log, $trace);
 
     }
 
@@ -93,7 +99,7 @@ class GuzzleConnection extends AbstractConnection implements ConnectionInterface
 
         $uri = $this->getURI($uri, $params);
 
-        $options += $this->connectionOpts;
+        $options += $this->connectionParams;
         $request = $this->buildGuzzleRequest($method, $uri, $body, $options);
         $response = $this->sendRequest($request, $body);
 
@@ -103,6 +109,15 @@ class GuzzleConnection extends AbstractConnection implements ConnectionInterface
             'info'   => $response->getInfo(),
         );
 
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getLastRequestInfo()
+    {
+        return $this->lastRequest;
     }
 
 
@@ -139,9 +154,30 @@ class GuzzleConnection extends AbstractConnection implements ConnectionInterface
         }
 
         if (isset($body) === true) {
-            $request = $this->guzzle->$method($uri, array(), $body, $options);
+            $this->lastRequest = array( 'request' => array(
+                'uri'     => $uri,
+                'body'    => $body,
+                'options' => $options,
+                'method'  => $method
+            ));
+
+            /** @var EntityEnclosingRequest $request */
+            $request = $this->guzzle->$method($uri, array('content-type' => 'application/json'), $body, $options);
+            if (isset($options['auth'])) {
+                $request->setAuth($options['auth'][0],$options['auth'][1],$options['auth'][2]);
+            }
+
         } else {
-            $request = $this->guzzle->$method($uri, array(), $options);
+            $this->lastRequest = array( 'request' => array(
+                'uri'     => $uri,
+                'body'    => null,
+                'options' => $options,
+                'method'  => $method
+            ));
+            $request = $this->guzzle->$method($uri, array(), array(), $options);
+            if (isset($options['auth'])) {
+                $request->setAuth($options['auth'][0],$options['auth'][1],$options['auth'][2]);
+            }
         }
 
         return $request;
@@ -227,6 +263,8 @@ class GuzzleConnection extends AbstractConnection implements ConnectionInterface
 
         if ($statusCode === 400 && strpos($responseBody, "AlreadyExpiredException") !== false) {
             throw new AlreadyExpiredException($responseBody, $statusCode, $exception);
+        } elseif ($statusCode === 401) {
+            throw new Authentication401Exception($responseBody, $statusCode, $exception);
         } elseif ($statusCode === 403) {
             throw new Forbidden403Exception($responseBody, $statusCode, $exception);
         } elseif ($statusCode === 404) {
@@ -248,16 +286,24 @@ class GuzzleConnection extends AbstractConnection implements ConnectionInterface
      */
     private function logErrorDueToFailure(Request $request, \Exception $exception, $body)
     {
-        $response = $request->getResponse();
-        $headers = $request->getHeaders()->getAll();
+        $response     = $request->getResponse();
+        $headers      = $request->getHeaders()->getAll();
+        $info         = $response->getInfo();
+        $responseBody = $response->getBody(true);
+        $status       = $response->getStatusCode();
+
+        $this->lastRequest['response']['body']    = $responseBody;
+        $this->lastRequest['response']['info']    = $info;
+        $this->lastRequest['response']['status']  = $status;
 
         $this->logRequestFail(
             $request->getMethod(),
             $request->getUrl(),
-            $response->getInfo('total_time'),
-            $headers,
-            $response->getStatusCode(),
             $body,
+            $headers,
+            $response->getInfo('total_time'),
+            $response->getStatusCode(),
+            $responseBody,
             $exception->getMessage()
         );
     }
@@ -279,16 +325,22 @@ class GuzzleConnection extends AbstractConnection implements ConnectionInterface
      */
     private function processSuccessfulRequest(Request $request, $body)
     {
-        $response = $request->getResponse();
-        $headers = $request->getHeaders()->getAll();
+        $response     = $request->getResponse();
+        $headers      = $request->getHeaders()->getAll();
+        $responseBody = $response->getBody(true);
+        $status       = $response->getStatusCode();
+
+        $this->lastRequest['response']['body']    = $responseBody;
+        $this->lastRequest['response']['info']    = $response->getInfo();
+        $this->lastRequest['response']['status']  = $status;
 
         $this->logRequestSuccess(
             $request->getMethod(),
             $request->getUrl(),
             $body,
             $headers,
-            $response->getStatusCode(),
-            $response->getBody(true),
+            $status,
+            $responseBody,
             $response->getInfo('total_time')
         );
     }

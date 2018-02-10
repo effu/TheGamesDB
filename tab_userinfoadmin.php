@@ -1,25 +1,24 @@
 <?php
-	if ($adminuserlevel == 'ADMINISTRATOR')  { 
+if ($adminuserlevel == 'ADMINISTRATOR') {
 
-	if ($_SESSION['userlevel'] == 'SUPERADMIN')  {
-	  $query = "SELECT * FROM users WHERE id=$id";
-	}
-	else {
-	  $query = "SELECT * FROM users WHERE id=$id AND userlevel = 'USER'";
-	}
-	$result = mysql_query($query) or die('Query failed: ' . mysql_error());
-	$users	= mysql_fetch_object($result);
+    if ($_SESSION['userlevel'] == 'SUPERADMIN') {
+        $query = "SELECT * FROM users WHERE id=$id";
+    } else {
+        $query = "SELECT * FROM users WHERE id=$id AND userlevel = 'USER'";
+    }
+    $result = $database->query($query) or die('Query failed: ' . mysql_error());
+    $users = $result->fetch(PDO::FETCH_OBJ);
 
-
-	if ($users->lastupdatedby_admin)  { 
-	$query	= "SELECT * FROM users WHERE id=$users->lastupdatedby_admin";
-	$result = mysql_query($query) or die('Query failed: ' . mysql_error());
-	$adminuser	= mysql_fetch_object($result);
-	}
-?>
+    if ($users->lastupdatedby_admin) {
+        $query = "SELECT * FROM users WHERE id=$users->lastupdatedby_admin";
+        $result = $database->query($query) or die('Query failed: ' . mysql_error());
+        $adminuser = $result->fetch(PDO::FETCH_OBJ);
+    }
+    ?>
 
 <div class="section">
-<?php if ($users->username)  { ?>
+<?php if ($users->username) {
+        ?>
 
 <h1>User Information | <?=$users->username?></h1>
 <form action="<?=$fullurl?>" method="POST">
@@ -35,10 +34,10 @@
 	<td><input type="password" name="userpass1"></td>
 	<td>
 	<?php
-	if ($users->lastupdatedby_admin)  {
-		echo "Last Updated By $adminuser->username";		 
-	}
-	?>
+if ($users->lastupdatedby_admin) {
+            echo "Last Updated By $adminuser->username";
+        }
+        ?>
 	</td>
 </tr>
 <tr>
@@ -51,37 +50,37 @@
 	<td><input type="text" name="email" value="<?=$users->emailaddress?>"></td>
 	<td>&nbsp;</td>
 </tr>
-<?php if ($_SESSION['userlevel'] == 'SUPERADMIN')  { ?>
+<?php if ($_SESSION['userlevel'] == 'SUPERADMIN') {?>
 <tr>
 	<td><b>User Level</b></td>
 	<td>
 	  <select name="form_userlevel" size="1">
-		<option value="USER" <?php if ($users->userlevel == 'USER') { print 'selected'; } ?>>USER</option>
-		<option value="ADMINISTRATOR" <?php if ($users->userlevel == 'ADMINISTRATOR') { print 'selected'; } ?>>ADMINISTRATOR</option>
-		<option value="SUPERADMIN" <?php if ($users->userlevel == 'SUPERADMIN') { print 'selected'; } ?>>SUPERADMIN</option>
+		<option value="USER" <?php if ($users->userlevel == 'USER') {print 'selected';}?>>USER</option>
+		<option value="ADMINISTRATOR" <?php if ($users->userlevel == 'ADMINISTRATOR') {print 'selected';}?>>ADMINISTRATOR</option>
+		<option value="SUPERADMIN" <?php if ($users->userlevel == 'SUPERADMIN') {print 'selected';}?>>SUPERADMIN</option>
 	  </select>
 	</td>
 	<td>&nbsp;</td>
 </tr>
-<?php } ?>
+<?php }?>
 <tr>
 	<td><b>Preferred Language</b></td>
 	<td>
 		<select name="languageid" size="1">
 			<?php
-				## Display language selector
-				foreach ($languages AS $langid => $langname)  {
-					## If we have the currently selected language
-					if ($users->languageid == $langid)  {
-						$selected = 'selected';
-					}
-					## Otherwise
-					else  {
-						$selected = '';
-					}
-					print "<option value=\"$langid\" $selected>$langname</option>\n";
-				}
-			?>
+## Display language selector
+        foreach ($languages as $langid => $langname) {
+            ## If we have the currently selected language
+            if ($users->languageid == $langid) {
+                $selected = 'selected';
+            }
+            ## Otherwise
+            else {
+                $selected = '';
+            }
+            print "<option value=\"$langid\" $selected>$langname</option>\n";
+        }
+        ?>
 			</select>
 	</td>
 	<td>&nbsp;</td>
@@ -99,8 +98,8 @@
 	<td><b>Account Active</b></td>
 	<td>
 	  <select name="form_active" size="1">
-		<option value="1" <?php if ($users->active == 1) { print 'selected'; } ?>>Yes</option>
-		<option value="0" <?php if ($users->active == 0) { print 'selected'; } ?>>No</option>
+		<option value="1" <?php if ($users->active == 1) {print 'selected';}?>>Yes</option>
+		<option value="0" <?php if ($users->active == 0) {print 'selected';}?>>No</option>
 	  </select>
 	</td>
 	<td>&nbsp;</td>
@@ -113,15 +112,15 @@
 </table>
 
 </form>
-<?php } else {ECHO "Either you have a requested a non-existent user or one whose userlevel is his above your ability to edit."; } ?>
+<?php } else {echo "Either you have a requested a non-existent user or one whose userlevel is his above your ability to edit.";}?>
 </div>
 <?php
-	} //
-	else  {
-?>
+} //
+else {
+    ?>
 		<div class="section">
 		<h1>Administrators Only</h1>
 		</div>
 <?php
-	}
+}
 ?>

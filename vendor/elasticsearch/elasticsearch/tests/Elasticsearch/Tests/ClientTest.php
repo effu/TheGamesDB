@@ -9,6 +9,7 @@ use org\bovigo\vfs\vfsStreamDirectory;
 use Psr\Log\LogLevel;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Mockery as m;
+use TestNamespace\TestNamespace;
 
 /**
  * Class ClientTest
@@ -47,10 +48,35 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testOneGoodOneBadHostNoException()
     {
         $params = array('hosts' => array (
-            '127.0.0.1:9200',
-            '127.0.0.1:9201',
+            '127.0.0.1:1',
+            $_SERVER['ES_TEST_HOST'],
         ));
-        $this->client = new Elasticsearch\Client($params);
+        $client = new Elasticsearch\Client($params);
+
+        // Perform three requests to make sure the bad host is tried at least once
+        $client->exists(array("index" => 'test', 'type' => 'test', 'id' => 'test'));
+        $client->exists(array("index" => 'test', 'type' => 'test', 'id' => 'test'));
+        $client->exists(array("index" => 'test', 'type' => 'test', 'id' => 'test'));
+
+    }
+
+
+    /**
+     * @expectedException Elasticsearch\Common\Exceptions\Curl\CouldNotConnectToHost
+     */
+    public function testOneGoodOneBadHostNoRetryException()
+    {
+        $params = array('hosts' => array (
+            '127.0.0.1:1',
+            $_SERVER['ES_TEST_HOST'],
+        ));
+        $params['retries'] = 0;
+        $client = new Elasticsearch\Client($params);
+
+        // Perform three requests to make sure the bad host is tried at least once
+        $client->exists(array("index" => 'test', 'type' => 'test', 'id' => 'test'));
+        $client->exists(array("index" => 'test', 'type' => 'test', 'id' => 'test'));
+        $client->exists(array("index" => 'test', 'type' => 'test', 'id' => 'test'));
 
     }
 
@@ -98,7 +124,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testConstructorEmptyPort()
     {
-        $mockPimple = m::mock('Pimple')->shouldReceive('offsetGet')->getMock()->shouldReceive('offsetSet')->getMock();
+        $mockPimple = m::mock('\Pimple\Container')->shouldReceive('offsetGet')->getMock()
+            ->shouldReceive('offsetSet')->getMock()
+            ->shouldReceive('offsetExists')->andReturn(false)->getMock();
         $mockDIC = m::mock('DICBuilder')->shouldReceive('getDIC')->once()->andReturn($mockPimple)->getMock();
 
         $that = $this;  //hurp durp
@@ -107,7 +135,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             'hosts' => array('localhost:'),
             'dic' => function ($hosts, $params) use ($mockDIC, $that) {
 
-                $expected = array(array('host' => 'localhost', 'port' => 80));
+                $expected = array(array('scheme' => 'http', 'host' => 'localhost', 'port' => 9200));
                 $that->assertEquals($expected, $hosts);
                 return $mockDIC;
             }
@@ -118,7 +146,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testConstructorNoPort()
     {
-        $mockPimple = m::mock('Pimple')->shouldReceive('offsetGet')->getMock()->shouldReceive('offsetSet')->getMock();
+        $mockPimple = m::mock('\Pimple\Container')->shouldReceive('offsetGet')->getMock()
+            ->shouldReceive('offsetSet')->getMock()
+            ->shouldReceive('offsetExists')->andReturn(false)->getMock();
         $mockDIC = m::mock('DICBuilder')->shouldReceive('getDIC')->once()->andReturn($mockPimple)->getMock();
 
         $that = $this;  //hurp durp
@@ -127,7 +157,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             'hosts' => array('localhost'),
             'dic' => function ($hosts, $params) use ($mockDIC, $that) {
 
-                $expected = array(array('host' => 'localhost', 'port' => 80));
+                $expected = array(array('scheme' => 'http', 'host' => 'localhost', 'port' => 9200));
                 $that->assertEquals($expected, $hosts);
                 return $mockDIC;
             }
@@ -138,7 +168,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testConstructorWithPort()
     {
-        $mockPimple = m::mock('Pimple')->shouldReceive('offsetGet')->getMock()->shouldReceive('offsetSet')->getMock();
+        $mockPimple = m::mock('\Pimple\Container')->shouldReceive('offsetGet')->getMock()
+            ->shouldReceive('offsetSet')->getMock()
+            ->shouldReceive('offsetExists')->andReturn(false)->getMock();
         $mockDIC = m::mock('DICBuilder')->shouldReceive('getDIC')->once()->andReturn($mockPimple)->getMock();
 
         $that = $this;  //hurp durp
@@ -147,7 +179,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             'hosts' => array('localhost:9200'),
             'dic' => function ($hosts, $params) use ($mockDIC, $that) {
 
-                $expected = array(array('host' => 'localhost', 'port' => 9200));
+                $expected = array(array('scheme' => 'http', 'host' => 'localhost', 'port' => 9200));
                 $that->assertEquals($expected, $hosts);
                 return $mockDIC;
             }
@@ -158,7 +190,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testConstructorWithSchemeAndPort()
     {
-        $mockPimple = m::mock('Pimple')->shouldReceive('offsetGet')->getMock()->shouldReceive('offsetSet')->getMock();
+        $mockPimple = m::mock('\Pimple\Container')->shouldReceive('offsetGet')->getMock()
+            ->shouldReceive('offsetSet')->getMock()
+            ->shouldReceive('offsetExists')->andReturn(false)->getMock();
         $mockDIC = m::mock('DICBuilder')->shouldReceive('getDIC')->once()->andReturn($mockPimple)->getMock();
 
         $that = $this;  //hurp durp
@@ -167,7 +201,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             'hosts' => array('http://localhost:9200'),
             'dic' => function ($hosts, $params) use ($mockDIC, $that) {
 
-                $expected = array(array('host' => 'localhost', 'port' => 9200));
+                $expected = array(array('scheme' => 'http', 'host' => 'localhost', 'port' => 9200));
                 $that->assertEquals($expected, $hosts);
                 return $mockDIC;
             }
@@ -304,5 +338,64 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         }
 
+    }
+
+    public function testHTTPS()
+    {
+        // Hosts param must be an array.
+        $params = array('hosts' => array('https://localhost'));
+        $client = new Elasticsearch\Client($params);
+
+        try {
+            $client->exists(array('index' => 't', 'type' => 't', 'id' => 1));
+        } catch (\Exception $e) {
+
+        }
+
+        $last = $client->transport->getLastConnection()->getLastRequestInfo();
+        $this->assertEquals('https://localhost:9200/t/t/1?', $last['request']['uri']);
+
+    }
+
+    public function testCustomQueryParams() {
+        $params = array();
+
+        $params['hosts'] = array ($_SERVER['ES_TEST_HOST']);
+        $client = new Elasticsearch\Client($params);
+
+        $getParams = array(
+            'index' => 'test',
+            'type' => 'test',
+            'id' => 1,
+            'parent' => 'abc',
+            'custom' => array('customToken' => 'abc', 'otherToken' => 123)
+        );
+        $exists = $client->exists($getParams);
+    }
+
+
+    public function testUserNamespace() {
+        $params = array();
+        $params['customNamespaces'] = array('test' => 'TestNamespace\TestNamespace');
+        $client = new Elasticsearch\Client($params);
+
+        $this->assertEquals($client->test()->echoString(), "abc");
+    }
+}
+
+namespace TestNamespace;
+
+use Elasticsearch\Namespaces\AbstractNamespace;
+
+class TestNamespace extends AbstractNamespace {
+
+    public static function build() {
+        return function ($dicParams) {
+            return new TestNamespace($dicParams['transport'], $dicParams['endpoint']);
+        };
+    }
+
+    public function echoString() {
+        return "abc";
     }
 }

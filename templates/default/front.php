@@ -1,16 +1,16 @@
 <!DOCTYPE html >
 <head>
 	<meta charset="utf-8"/>
-	
+
 	<meta name="robots" content="index, follow" />
 	<meta name="keywords" content="thegamesdb, the games db, games, database, meta, metadata, api, video, youtube, trailers, wallpapers, fanart, cover art, box art, fan art, open, source, game, search, forum," />
 	<meta name="language" content="en-US" />
 	<meta name="description" content="TheGamesDB is an open, online database for video game fans. We are driven by a strong community to provide the best place to find information, covers, backdrops screenshots and videos for games, both modern and classic." />
-  
+
 	<title>TheGamesDB.net - An open, online database for video game fans</title>
-	
-	<link rel="shortcut icon" href="<?= $baseurl ?>/favicon.ico" />
-	
+
+	<link rel="shortcut icon" href="<?=$baseurl?>/favicon.ico" />
+
 	<link rel="stylesheet" type="text/css" href="<?php echo $baseurl; ?>/js/fullscreenslider/css/style.css"/>
 	<link rel="stylesheet" href="<?php echo $baseurl; ?>/js/jquery-ui/css/trontastic/jquery-ui-1.8.14.custom.css" type="text/css" media="all" />
 	<script type="text/JavaScript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
@@ -24,16 +24,16 @@
 	<script src="<?php echo $baseurl; ?>/js/facebox/facebox.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		jQuery(document).ready(function($) {
-		   $('a[rel*=facebox]').facebox() 
-		}) 
+		   $('a[rel*=facebox]').facebox()
+		})
 	</script>
 	<!-- End FaceBox Include -->
-	
+
 	<!-- Start jQuery Snow Script -->
 	<link rel="stylesheet" href="<?php echo $baseurl; ?>/js/jquery-snowfall/styles.css" type="text/css" media="all" />
 	<script src="<?php echo $baseurl; ?>/js/jquery-snowfall/snowfall.min.jquery.js" type="text/javascript"></script>
 	<!-- End jQuery Snow Script -->
-	
+
 	<style type="text/css">
 		body {
 			background:#111111 url(<?php echo $baseurl; ?>/images/bg-main-background.jpg) repeat-x top center;
@@ -155,104 +155,93 @@
 			cursor: pointer;
 		}
 	</style>
-	
+
 	<?php
-		$sql = "SELECT g.GameTitle, p.name, p.id AS platformid, p.icon, g.id, b.filename FROM games AS g, banners AS b, platforms AS p, ratings AS r WHERE r.itemid = b.id AND g.id = b.keyvalue AND r.itemtype = 'banner' AND b.keytype = 'fanart' AND g.platform = p.id GROUP BY g.GameTitle, p.name, g.id, b.filename    HAVING AVG(r.rating) = 10 ORDER BY RAND() LIMIT 6";
-		$result = mysql_query($sql);
-		if ($result !== FALSE) {
-		$rows = mysql_num_rows($result);
-	?>
+$sql = "SELECT g.GameTitle, p.name, p.id AS platformid, p.icon, g.id, b.filename FROM games AS g, banners AS b, platforms AS p, ratings AS r WHERE r.itemid = b.id AND g.id = b.keyvalue AND r.itemtype = 'banner' AND b.keytype = 'fanart' AND g.platform = p.id GROUP BY g.GameTitle, p.name, g.id, b.filename    HAVING AVG(r.rating) = 10 ORDER BY RAND() LIMIT 6";
+$result = $database->query($sql);
+if ($result !== false) {
+    $rows = count($result);
+    ?>
 	<script type="text/javascript">
 		var photos = [
 			<?php
-				$colours = array("orange", "blue", "purple", "green", "red", "yellow");
-				$colourCount = 0;
-				$gameRowCount = 0;
-				$imageUrls = array();
-				
-				// Include JPEG Reducer Class
-                include('simpleimage50.php');
-				
-				while ($game = mysql_fetch_object($result)) {
+$colours = array("orange", "blue", "purple", "green", "red", "yellow");
+    $colourCount = 0;
+    $gameRowCount = 0;
+    $imageUrls = array();
 
-					// Get Game Rating
-					$ratingquery	= "SELECT AVG(rating) AS average, count(*) AS count FROM ratings WHERE itemtype='game' AND itemid=$game->id";
-					$ratingresult = mysql_query($ratingquery) or die('Query failed: ' . mysql_error());
-					$rating = mysql_fetch_object($ratingresult);					
-					
-					if($gameRowCount != $rows - 1) 
-					{
-							// Recompress Fanart to 50% Jpeg Quality and save to front page image cache
-							if(!file_exists("banners/_frontcache/$game->filename"))
-							{
-									$image = new SimpleImage();
-									$image->load("banners/$game->filename");
-									$image->save("banners/_frontcache/$game->filename");
-							}
-							
-							$imageUrls[] = "banners/_frontcache/$game->filename";
-					?>
+    // Include JPEG Reducer Class
+    include 'simpleimage50.php';
+
+    while ($game = $result->fetch(PDO::FETCH_OBJ)) {
+
+        // Get Game Rating
+        $ratingquery = "SELECT AVG(rating) AS average, count(*) AS count FROM ratings WHERE itemtype='game' AND itemid=$game->id";
+        $ratingresult = $database->query($ratingquery) or die('Query failed: ' . mysql_error());
+        $rating = $ratingresult->fetch(PDO::FETCH_OBJ);
+
+        if ($gameRowCount != $rows - 1) {
+            // Recompress Fanart to 50% Jpeg Quality and save to front page image cache
+            if (!file_exists("banners/_frontcache/$game->filename")) {
+                $image = new SimpleImage();
+                $image->load("banners/$game->filename");
+                $image->save("banners/_frontcache/$game->filename");
+            }
+
+            $imageUrls[] = "banners/_frontcache/$game->filename";
+            ?>
 							{
 									"title" : "<?=$game->GameTitle?>",
 									"cssclass" : "<?=$colours[$colourCount]?>",
 									"image" : "banners/_frontcache/<?=$game->filename?>",
 									"text" : "<?=$game->name?>",
-									"icon" : "<?= $game->icon; ?>",
-									"platformid" : "<?= $game->platformid; ?>",
-									"rating" : "<?php for ($i = 2; $i <= 10; $i = $i + 2) {	if ($i <= $rating->average) { print '<img src=\'images/game/star_on.png\' width=15 height=15 border=0>'; }	else if ($rating->average > $i - 2 && $rating->average < $i) { print '<img src=\'images/game/star_half.png\' width=15 height=15 border=0>'; } else {	print '<img src=\'images/game/star_off.png\' width=15 height=15 border=0>'; } } ?>",
-									"url" : '<?= $baseurl; ?>/game/<?=$game->id?>/',
+									"icon" : "<?=$game->icon;?>",
+									"platformid" : "<?=$game->platformid;?>",
+									"rating" : "<?php for ($i = 2; $i <= 10; $i = $i + 2) {if ($i <= $rating->average) {print '<img src=\'images/game/star_on.png\' width=15 height=15 border=0>';} else if ($rating->average > $i - 2 && $rating->average < $i) {print '<img src=\'images/game/star_half.png\' width=15 height=15 border=0>';} else {print '<img src=\'images/game/star_off.png\' width=15 height=15 border=0>';}}?>",
+									"url" : '<?=$baseurl;?>/game/<?=$game->id?>/',
 									"urltext" : 'View Game'
 							},
 					<?php
-							if($colourCount != 5)
-							{
-									$colourCount++;
-							}
-							else
-							{
-									$colourCount = 0;
-							}
-							$gameRowCount++;
-					}
-					else
-					{
-							// Recompress Fanart to 50% Jpeg Quality and save to front page image cache
-							if(!file_exists("banners/_frontcache/$game->filename"))
-							{
-									$image = new SimpleImage();
-									$image->load("banners/$game->filename");
-									$image->save("banners/_frontcache/$game->filename");
-							}
-						
-							$imageUrls[] = "banners/_frontcache/$game->filename";
-					?>
+if ($colourCount != 5) {
+                $colourCount++;
+            } else {
+                $colourCount = 0;
+            }
+            $gameRowCount++;
+        } else {
+            // Recompress Fanart to 50% Jpeg Quality and save to front page image cache
+            if (!file_exists("banners/_frontcache/$game->filename")) {
+                $image = new SimpleImage();
+                $image->load("banners/$game->filename");
+                $image->save("banners/_frontcache/$game->filename");
+            }
+
+            $imageUrls[] = "banners/_frontcache/$game->filename";
+            ?>
 							{
 									"title" : "<?=$game->GameTitle?>",
 									"cssclass" : "<?=$colours[$colourCount]?>",
 									"image" : "banners/_frontcache/<?=$game->filename?>",
 									"text" : "<?=$game->name?>",
-									"icon" : "<?= $game->icon; ?>",
-									"rating" : "<?php for ($i = 2; $i <= 10; $i = $i + 2) {	if ($i <= $rating->average) { print '<img src=\'images/game/star_on.png\' width=15 height=15 border=0>'; }	else if ($rating->average > $i - 2 && $rating->average < $i) { print '<img src=\'images/game/star_half.png\' width=15 height=15 border=0>'; } else {	print '<img src=\'images/game/star_off.png\' width=15 height=15 border=0>'; } } ?>",
-									"url" : '<?= $baseurl; ?>/game/<?=$game->id?>/',
+									"icon" : "<?=$game->icon;?>",
+									"rating" : "<?php for ($i = 2; $i <= 10; $i = $i + 2) {if ($i <= $rating->average) {print '<img src=\'images/game/star_on.png\' width=15 height=15 border=0>';} else if ($rating->average > $i - 2 && $rating->average < $i) {print '<img src=\'images/game/star_half.png\' width=15 height=15 border=0>';} else {print '<img src=\'images/game/star_off.png\' width=15 height=15 border=0>';}}?>",
+									"url" : '<?=$baseurl;?>/game/<?=$game->id?>/',
 									"urltext" : 'View Game'
 							}
 					<?php
-							if($colourCount != 2)
-							{
-									$colourCount++;
-							}
-							else
-							{
-									$colourCount = 0;
-							}
-					}
-				}
-	?>
+if ($colourCount != 2) {
+                $colourCount++;
+            } else {
+                $colourCount = 0;
+            }
+        }
+    }
+    ?>
 		];
 	</script>
 	<?php
-		}
-	?>
+}
+?>
 </head>
 <body>
 
@@ -260,30 +249,30 @@
 		<div id="frontBanner" style="width: 880px; margin: auto;">
 			<p style="position: absolute; top: 10px; right: 15px; font-family:Arial; font-size:10pt;">
 				<?php if ($loggedin) {
-					$msgQuery = mysql_query(" SELECT id FROM messages WHERE status = 'new' AND messages.to = '$user->id' ");
-					$msgCount = mysql_num_rows($msgQuery);
-					?><a href="<?= $baseurl ?>/messages/">Messages</a> <?php if($msgCount > 0) { echo"<span style=\"color: Chartreuse;\">($msgCount)</span>"; } else { echo "($msgCount)"; } ?> <span style="color: #ccc;">|</span> <a href="<?= $baseurl ?>/favorites/">Favorites</a> (<?php if($user->favorites != ""){ echo count(explode(",", $user->favorites)); } else{ echo "0"; } ?>) <span style="color: #ccc;">|</span> <?php if ($adminuserlevel == 'ADMINISTRATOR') { ?> <a href="<?= $baseurl ?>/admincp/">Admin Control Panel</a> <?php } else { ?><a href="<?= $baseurl ?>/userinfo/">My User Info</a><?php } ?> <span style="color: #ccc;">|</span> <a href="<?= $baseurl ?>/?function=Log Out">Logout</a>
-				<?php } else { ?>
-					<a href="<?= $baseurl ?>/login/">Login</a> <span style="color: #ccc;">|</span> New to the site? <a href="<?= $baseurl ?>/register/">Register here!</a>
-				<?php } ?>
+    $msgQuery = $database->query(" SELECT id FROM messages WHERE status = 'new' AND messages.to = '$user->id' ");
+    $msgCount = count($msgQuery);
+    ?><a href="<?=$baseurl?>/messages/">Messages</a> <?php if ($msgCount > 0) {echo "<span style=\"color: Chartreuse;\">($msgCount)</span>";} else {echo "($msgCount)";}?> <span style="color: #ccc;">|</span> <a href="<?=$baseurl?>/favorites/">Favorites</a> (<?php if ($user->favorites != "") {echo count(explode(",", $user->favorites));} else {echo "0";}?>) <span style="color: #ccc;">|</span> <?php if ($adminuserlevel == 'ADMINISTRATOR') {?> <a href="<?=$baseurl?>/admincp/">Admin Control Panel</a> <?php } else {?><a href="<?=$baseurl?>/userinfo/">My User Info</a><?php }?> <span style="color: #ccc;">|</span> <a href="<?=$baseurl?>/?function=Log Out">Logout</a>
+				<?php } else {?>
+					<a href="<?=$baseurl?>/login/">Login</a> <span style="color: #ccc;">|</span> New to the site? <a href="<?=$baseurl?>/register/">Register here!</a>
+				<?php }?>
 			</p>
 			<a href="<?php echo $baseurl; ?>/" title="An open database of video games">
 				<img src="<?php echo $baseurl; ?>/images/bannerws-thin-glass-v2.png" style="border-width: 0px; padding: 12px 125px" />
 			</a>
 		</div>
 	</div>
-	
+
 	<div style="position: absolute; top: 78px; background: url(<?php echo $baseurl; ?>/images/bg_banner-shadow.png) repeat-x center center; height: 15px; width: 100%; z-index: 200;"></div>
-	
+
 	<div id="messages" style="position: absolute; top: 160px; width: 100%;">
-	<?php if(!empty($errormessage)): ?>
-	<div class="error"><?= $errormessage ?></div>
-	<?php endif; ?>
-	<?php if(!empty($message)): ?>
-	<div class="message"><?= $message ?></div>
-	<?php endif; ?>
+	<?php if (!empty($errormessage)): ?>
+	<div class="error"><?=$errormessage?></div>
+	<?php endif;?>
+	<?php if (!empty($message)): ?>
+	<div class="message"><?=$message?></div>
+	<?php endif;?>
 	</div>
-	
+
 	<!-- Start Donation Box -->
 	<!--<span  style="width: 244px; position: absolute; top: 17%; right: 2%; z-index: 200; padding: 12px; border: 1px solid #999; background: url(<?php echo $baseurl; ?>/images/bg_bannerws-thin-glass-strips.png); background-size: cover; border-radius: 12px;">
 		<p style="text-align: center; font-size: 24px; padding: 12px; color: #FFF; font-family: sans-serif;">Funds Drive</p>
@@ -292,72 +281,72 @@
 		<p style="text-align: center; padding-top: 12px;"><a class="approve" href="http://gogetfunding.com/project/thegamesdb-net" target="_blank">Donate Here</a></p>
 	</span>-->
 	<!-- End Donation Box -->
-	
-	
+
+
 	<div id="frontContentWrapper" style="position: absolute; top: 34%; width: 100%; height: 200px;  z-index: 200;">
-	
+
 		<div id="frontContent" style="opacity: 1; width: 600px; height: 160px; padding: 10px 30px; margin: auto; background: url(<?php echo $baseurl; ?>/images/bg_frontsearch.png) repeat-x center center; border-radius: 16px; border: 0px solid #333;">
-		
+
 			<h1 style="text-align: center; font-family: 'Segoe UI','HelveticaNeue-Light','Helvetica Neue Light','Helvetica Neue',Arial,Tahoma,Verdana,sans-serif; font-size:26px; text-shadow: 0px 2px 6px #333; color:#fff; letter-spacing: 2px;">
 			<?php
-				$gamecountResult = mysql_query(" SELECT id FROM games ");
-				$gamecount = mysql_num_rows($gamecountResult);
-				echo number_format($gamecount) . " games and counting....";
-			?>
+$gamecountResult = $database->query(" SELECT count(id) FROM games ");
+$gamecount = $gamecountResult->fetchColumn();
+echo number_format($gamecount) . " games and counting....";
+?>
 			</h1>
-			
+
 			<div id="searchbox" style="padding: 16px 0px; text-align: center;">
-				<form id="search" action="<?= $baseurl ?>/search/" autocomplete="off">
+				<form id="search" action="<?=$baseurl?>/search/" autocomplete="off">
                     <input type="text" id="frontGameSearch" name="string"  placeholder="Search Games..." x-webkit-speech style="border-radius: 6px 0px 0px 6px; width: 450px;" /><input type="submit" value="Search" style="border-radius: 0px 6px 6px 0px; height: 36px; padding: 0px 5px 0px 5px;"  />
 					<div id="ajaxSearchResults"></div>
 					<input type="hidden" name="function" value="Search" />
 				</form>
 			</div>
-			
+
 			<div id="frontnav" style="font-family: 'Segoe UI','HelveticaNeue-Light','Helvetica Neue Light','Helvetica Neue',Arial,Tahoma,Verdana,sans-serif; font-size: 20px; text-shadow: 0px 2px 6px #666; color: #fff;">
-				<div style="width: 76px; padding: 10px; float: left; text-align: center;"><a href="<? echo $baseurl; ?>/browse/">Games</a></div>
-				<div style="width: 76px; padding: 10px; float: left; text-align: center;"><a href="<? echo $baseurl; ?>/platforms/">Platforms</a></div>
-				<div style="width: 76px; padding: 10px; float: left; text-align: center;"><a href="<? echo $baseurl; ?>/stats/">Stats</a></div>
-				<div style="width: 76px; padding: 10px; float: left; text-align: center;"><a href="<? echo $baseurl; ?>/blog/">Blog</a></div>
+				<div style="width: 76px; padding: 10px; float: left; text-align: center;"><a href="<?echo $baseurl; ?>/browse/">Games</a></div>
+				<div style="width: 76px; padding: 10px; float: left; text-align: center;"><a href="<?echo $baseurl; ?>/platforms/">Platforms</a></div>
+				<div style="width: 76px; padding: 10px; float: left; text-align: center;"><a href="<?echo $baseurl; ?>/stats/">Stats</a></div>
+				<div style="width: 76px; padding: 10px; float: left; text-align: center;"><a href="<?echo $baseurl; ?>/blog/">Blog</a></div>
 				<div style="width: 76px; padding: 10px; float: left; text-align: center;"><a href="http://forums.thegamesdb.net" target="_blank">Forum</a></div>
 				<div style="width: 76px; padding: 10px; float: left; text-align: center;"><a href="http://wiki.thegamesdb.net">Wiki</a></div>
 				<div style="clear: both;"></div>
 			</div>
-			
+
 		</div>
-		
+
 	</div>
-	
+
 	<div id="navigationBoxes">
-		<!-- Navigation boxes will get injected by jQuery -->	
+		<!-- Navigation boxes will get injected by jQuery -->
 	</div>
 
 	<div id="pictureSlider">
 		<!-- Pictures will be injected by jQuery -->
 	</div>
-	
+
 	<div id="footer" style="position:fixed; width: 100%; bottom:0px; z-index: 200; text-align: center;">
 		<div id="footerbarShadow" style="width: 100%; background: url(<?php echo $baseurl; ?>/images/bg_footerbar-shadow.png) repeat-x center center; height: 15px;"></div>
 		<div id="footerbar" style="width: 100%; background: url(<?php echo $baseurl; ?>/images/bg_footerbar.png) repeat-x center center; height: 30px;">
-		
+
 			<div id="Terms" style="padding-top: 5px; padding-left: 25px; float: left; font-family: 'Segoe UI','HelveticaNeue-Light','Helvetica Neue Light','Helvetica Neue',Arial,Tahoma,Verdana,sans-serif; font-size: 14px; text-shadow: 0px 2px 6px #666;">
 				<a href="<?=$baseurl?>/terms/" style="color: #333;">Terms &amp; Conditions</a>
 			</div>
-			
+
 			<div id="theTeam" style="padding-top: 5px; padding-right: 25px; float: right; font-family: 'Segoe UI','HelveticaNeue-Light','Helvetica Neue Light','Helvetica Neue',Arial,Tahoma,Verdana,sans-serif; font-size: 14px; text-shadow: 0px 2px 6px #666;">
-				<a href="http://wiki.thegamesdb.net" style="color: #333;">TheGamesDB Wiki</a> | <a href="<?php echo $baseurl; ?>/showcase" style="color: #333;">Showcase</a>  
+				<a href="http://wiki.thegamesdb.net" style="color: #333;">TheGamesDB Wiki</a> | <a href="<?php echo $baseurl; ?>/showcase" style="color: #333;">Showcase</a>
 			</div>
-			
+
 			<div style="padding-top: 4px;">
-			<a href="http://www.facebook.com/thegamesdb" target="_blank"><img src="<?= $baseurl ?>/images/common/icons/social/24/facebook_dark.png" alt="Visit us on Facebook" title="Visit us on Facebook" style="border: 0px;" onmouseover="$(this).attr('src', '<?= $baseurl ?>/images/common/icons/social/24/facebook_active.png')" onmouseout="$(this).attr('src', '<?= $baseurl ?>/images/common/icons/social/24/facebook_dark.png')" /></a>
-			<a href="http://twitter.com/thegamesdb" target="_blank"><img src="<?= $baseurl ?>/images/common/icons/social/24/twitter_dark.png" alt="Visit us on Twitter" title="Visit us on Twitter" style="border: 0px;" onmouseover="$(this).attr('src', '<?= $baseurl ?>/images/common/icons/social/24/twitter_active.png')" onmouseout="$(this).attr('src', '<?= $baseurl ?>/images/common/icons/social/24/twitter_dark.png')" /></a>
-			<a href="https://plus.google.com/116977810662942577082/posts" target="_blank"><img src="<?= $baseurl ?>/images/common/icons/social/24/google_dark.png" alt="Visit us on Google Plus" title="Visit us on Google Plus"  style="border: 0px;" onmouseover="$(this).attr('src', '<?= $baseurl ?>/images/common/icons/social/24/google_active.png')" onmouseout="$(this).attr('src', '<?= $baseurl ?>/images/common/icons/social/24/google_dark.png')" /></a>
-			<a href="<?= $baseurl; ?>/mailshare.php?urlsubject=<?= urlencode("TheGamesDB.net - Home"); ?>&url=<?= urlencode($baseurl); ?>" rel="facebox"><img src="<?= $baseurl ?>/images/common/icons/social/24/share_dark.png" alt="Share via Email" title="Share via Email" style="border: 0px;" onmouseover="$(this).attr('src', '<?= $baseurl ?>/images/common/icons/social/24/share_active.png')" onmouseout="$(this).attr('src', '<?= $baseurl ?>/images/common/icons/social/24/share_dark.png')" /></a>
+			<a href="http://www.facebook.com/thegamesdb" target="_blank"><img src="<?=$baseurl?>/images/common/icons/social/24/facebook_dark.png" alt="Visit us on Facebook" title="Visit us on Facebook" style="border: 0px;" onmouseover="$(this).attr('src', '<?=$baseurl?>/images/common/icons/social/24/facebook_active.png')" onmouseout="$(this).attr('src', '<?=$baseurl?>/images/common/icons/social/24/facebook_dark.png')" /></a>
+			<a href="http://twitter.com/thegamesdb" target="_blank"><img src="<?=$baseurl?>/images/common/icons/social/24/twitter_dark.png" alt="Visit us on Twitter" title="Visit us on Twitter" style="border: 0px;" onmouseover="$(this).attr('src', '<?=$baseurl?>/images/common/icons/social/24/twitter_active.png')" onmouseout="$(this).attr('src', '<?=$baseurl?>/images/common/icons/social/24/twitter_dark.png')" /></a>
+			<a href="https://plus.google.com/116977810662942577082/posts" target="_blank"><img src="<?=$baseurl?>/images/common/icons/social/24/google_dark.png" alt="Visit us on Google Plus" title="Visit us on Google Plus"  style="border: 0px;" onmouseover="$(this).attr('src', '<?=$baseurl?>/images/common/icons/social/24/google_active.png')" onmouseout="$(this).attr('src', '<?=$baseurl?>/images/common/icons/social/24/google_dark.png')" /></a>
+			<a href="<?=$baseurl;?>/mailshare.php?urlsubject=<?=urlencode("TheGamesDB.net - Home");?>&url=<?=urlencode($baseurl);?>" rel="facebox"><img src="<?=$baseurl?>/images/common/icons/social/24/share_dark.png" alt="Share via Email" title="Share via Email" style="border: 0px;" onmouseover="$(this).attr('src', '<?=$baseurl?>/images/common/icons/social/24/share_active.png')" onmouseout="$(this).attr('src', '<?=$baseurl?>/images/common/icons/social/24/share_dark.png')" /></a>
 			</div>
-			
+
 		</div>
 	</div>
-	
+
 	<div id="credits" style="display: none;">
 	<div style="font-family: 'Segoe UI','HelveticaNeue-Light','Helvetica Neue Light','Helvetica Neue',Arial,Tahoma,Verdana,sans-serif; text-shadow: 0px 2px 6px #666;">
 		<h1>The Team</h1>
@@ -373,13 +362,12 @@
 	</div>
 	<div style="display:none;">
 		<?php
-			for($i = 0; $i < count($imageUrls); $i++)
-			{
-			?>
+for ($i = 0; $i < count($imageUrls); $i++) {
+    ?>
 				<img src="<?=$imageUrls[$i]?>" />
 			<?php
-			}
-			?>
+}
+?>
 	</div>
 
 	<script type="text/javascript">
@@ -389,12 +377,12 @@
 			{
 				$.post( "<?php echo $baseurl; ?>/scripts/ajax_searchgame.php", "searchterm=" + $(this).val(), function( data ) {
 					if (data.result == 'success')
-					{	
+					{
 					  	var resultsArray = [];
 
 					  	$.each(data.games, function(index, value) {
 					  		var currentResult = ['<li>',
-						  							'<a href="<?php $baseurl; ?>/game/' + value.id + '">' + value.title + '<br>',
+						  							'<a href="<?php $baseurl;?>/game/' + value.id + '">' + value.title + '<br>',
 						  								'<span>' + value.platform + '</span>',
 						  							'</a>',
 						  						'</li>'].join('\n');
@@ -413,7 +401,7 @@
 					else
 					{
 						$('#ajaxSearchResults').html('');
-						$('#ajaxSearchResults').slideUp('fast');	
+						$('#ajaxSearchResults').slideUp('fast');
 					}
 				}, "json");
 
@@ -445,7 +433,7 @@
 			        return false;
 			    }
 			    else if (e.keyCode == 38)
-			    {        
+			    {
 			        $(':focus').parent().prev().children('a').focus();
 					e.preventDefault();
 			        return false;
@@ -469,7 +457,7 @@
 		    }
 		});
 	</script>
-	
+
 	<script type="text/javascript">
 		var _gaq = _gaq || [];
 		_gaq.push(['_setAccount', 'UA-16803563-1']);
@@ -481,11 +469,11 @@
 			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 		})();
 	</script>
-	
+
 	<script type="text/javascript">
 		// jQuery Snow Script Instance
 		// $(document).snowfall({ flakeCount : 200, maxSpeed : 10, round: true, shadow: true, collection: '#footer', minSize: 2, maxSize: 4 });
 	</script>
-	
+
 </body>
 </html>

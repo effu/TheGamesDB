@@ -1,19 +1,19 @@
 	<div id="gameHead">
-	
-	<?php if($errormessage): ?>
-	<div class="error"><?= $errormessage ?></div>
-	<?php endif; ?>
-	<?php if($message): ?>
-	<div class="message"><?= $message ?></div>
-	<?php endif; ?>
-	
+
+	<?php if ($errormessage): ?>
+	<div class="error"><?=$errormessage?></div>
+	<?php endif;?>
+	<?php if ($message): ?>
+	<div class="message"><?=$message?></div>
+	<?php endif;?>
+
 <?php
-	if ($loggedin) {
-?>
+if ($loggedin) {
+    ?>
 
 	<h1 style="text-align: left;">Add A Game</h1>
 	<h2 style="color: #00CC3F;">Adding Rules:</h2>
-    <p style="text-align: justify"><img src="<?= $baseurl ?>/images/feature-mario.png" style="float: right;" /><span style="font-weight: bold;">Always check</span> to make sure a game doesn't already exsist before adding it.  If it is found to be a duplicate, it will be deleted.  If you believe you've found a special case where a duplicate should be allowed, please come to the forums and ask first or it will be deleted.  Use the advanced search tool to try and find your game before adding it.  We may have it listed under a name you aren't aware of, so if you know the ID for it, you may be able to find it that way.</p>
+    <p style="text-align: justify"><img src="<?=$baseurl?>/images/feature-mario.png" style="float: right;" /><span style="font-weight: bold;">Always check</span> to make sure a game doesn't already exsist before adding it.  If it is found to be a duplicate, it will be deleted.  If you believe you've found a special case where a duplicate should be allowed, please come to the forums and ask first or it will be deleted.  Use the advanced search tool to try and find your game before adding it.  We may have it listed under a name you aren't aware of, so if you know the ID for it, you may be able to find it that way.</p>
     <p style="text-align: justify">Map packs and certain add-on's for games generally don't qualify for their own entry and should be entered under the main game instead.  If you believe an exception should be made, please come to the forums and ask first.</p>
     <p style="text-align: justify">If you ever notice a game you've added has dissapeared and you can't figure out why, please come to the forums and ask.  Do not simply re-add it as it is likely to be deleted again.</p>
     <p style="text-align: justify"><b>DO NOT</b> put non english information into english fields.  If a game is published in another language, and is never translated from that language into english, we still do not want non-english information in the english fields.</p>
@@ -23,10 +23,10 @@
 		<table style="margin: auto;" cellspacing="10" cellpadding="4">
 			<tr>
 				<td>
-					<p style="font-size: 16px;"><span style="font-weight: bold; color: #CC0000"><img src="<?= $baseurl ?>/images/common/icons/cross_16.png" style="vertical-align: -2px; padding-right: 3px;" />Incorrect: </span><br />super mario bros.<br />sonic the hedgehog</p>
+					<p style="font-size: 16px;"><span style="font-weight: bold; color: #CC0000"><img src="<?=$baseurl?>/images/common/icons/cross_16.png" style="vertical-align: -2px; padding-right: 3px;" />Incorrect: </span><br />super mario bros.<br />sonic the hedgehog</p>
 				</td>
 				<td>
-					<p style="font-size: 16px;"><span style="font-weight: bold; color: #00EA33"><img src="<?= $baseurl ?>/images/common/icons/tick_16.png" style="vertical-align: -2px; padding-right: 3px;" />Correct: </span><br />Super Mario Bros.<br />Sonic the Hedgehog</p>
+					<p style="font-size: 16px;"><span style="font-weight: bold; color: #00EA33"><img src="<?=$baseurl?>/images/common/icons/tick_16.png" style="vertical-align: -2px; padding-right: 3px;" />Correct: </span><br />Super Mario Bros.<br />Sonic the Hedgehog</p>
 				</td>
 			</tr>
 		</table>
@@ -45,11 +45,11 @@
 
 		<!-- Begin Game Add Form -->
 		<?php
-			$platformResult = mysql_query(" SELECT id, name FROM platforms ORDER BY name ASC ");
-		?>
+$platformResult = $database->query(" SELECT id, name FROM platforms ORDER BY name ASC ");
+    ?>
 		<div id="addGamePanel" style="width: 600px; background-color: #000; color: #FFF; margin: 40px auto 20px auto; border: 1px solid #666; border-radius: 15px; padding: 5px 0px 15px 0px; font-size: 1.3em;">
 		<h3 style="text-align: center;">Enter New Game Info</h3>
-		<form action="<?php echo $baseurl;?>/index.php?" method="POST" onsubmit="if( $('#GameTitle').val() != '' && $('#Platform').val() != 'empty' && $('#existsNo').attr('checked') == 'checked') { return true; } else { return false; }">
+		<form action="<?php echo $baseurl; ?>/index.php?" method="POST" onsubmit="if( $('#GameTitle').val() != '' && $('#Platform').val() != 'empty' && $('#existsNo').attr('checked') == 'checked') { return true; } else { return false; }">
 			<table align="center">
 				<tr>
 					<td valign="middle" style="text-align: right;"><b>Platform:</b></td>
@@ -57,20 +57,19 @@
 						<select id="Platform" name="cleanPlatform" style="font-size: 1.2em; width: 355px; margin: 5px; padding: 2px;">
 							<option value="empty">Select Platform...</option>
 							<?php
-								while($platformRow = mysql_fetch_assoc($platformResult))
-								{
-							?>
-								<option value="<?php echo $platformRow["id"]; ?>"<?php if($passPlatform == $platformRow["id"]) {echo " selected";}?>><?php echo $platformRow["name"]; ?></option>
+while ($platformRow = $platformResult->fetch(PDO::FETCH_ASSOC)) {
+        ?>
+								<option value="<?php echo $platformRow["id"]; ?>"<?php if ($passPlatform == $platformRow["id"]) {echo " selected";}?>><?php echo $platformRow["name"]; ?></option>
 							<?php
-								}
-							?>
+}
+    ?>
 						</select>
 					</td>
 				</tr>
-				<tr> 
-					<td valign="middle" style="text-align: right;"><b>Game Title:</b></td> 
+				<tr>
+					<td valign="middle" style="text-align: right;"><b>Game Title:</b></td>
 					<td>
-						<input type="text" id="GameTitle" name="GameTitle" placeholder="Enter Game Title..." autocomplete="off" style="font-size: 1.2em; width: 351px; margin: 5px; padding: 2px;" value="<?php if(!empty($passTitle)){echo $passTitle;} ?>">
+						<input type="text" id="GameTitle" name="GameTitle" placeholder="Enter Game Title..." autocomplete="off" style="font-size: 1.2em; width: 351px; margin: 5px; padding: 2px;" value="<?php if (!empty($passTitle)) {echo $passTitle;}?>">
 					</td>
 				</tr>
 				<tr>
@@ -82,10 +81,10 @@
 						<div id="existingGames" class="gamesList">
 
 						</div>
-						
+
 						<div id="existsCheck" style="display: none;">
 							<p>Does the game you wanted to add exist in the list above,<br>or one that closely resembles it?</p>
-							
+
 							<table>
 								<tr>
 									<td style="text-align: center;">
@@ -125,12 +124,12 @@
 		{
 			$.post( "<?php echo $baseurl; ?>/scripts/ajax_searchgame.php", "searchterm=" + $('#GameTitle').val() + "&platform=" + $('#Platform').val(), function( data ) {
 				if (data.result == 'success')
-				{	
+				{
 				  	var resultsArray = [];
 
 				  	$.each(data.games, function(index, value) {
 				  		var currentResult = ['<li>',
-					  							'<a href="<?php $baseurl; ?>/game/' + value.id + '">' + value.title + '<br>',
+					  							'<a href="<?php $baseurl;?>/game/' + value.id + '">' + value.title + '<br>',
 					  								'<span>' + value.platform + '</span>',
 					  							'</a>',
 					  						'</li>'].join('\n');
@@ -146,7 +145,7 @@
 					$('#existingGames').html(resultDisplay);
 					$('#existingGames').slideDown();
 					$('#existsCheck').slideDown();
-					
+
 				}
 				else
 				{
@@ -193,17 +192,16 @@
 	});
 </script>
 <?php
-	}
-	else {
-?>
+} else {
+    ?>
 
 			<h1>Oops!</h1>
 			<h2 style="text-align: center;">You must be logged in to add a new game!</h2>
 			<p style="text-align: center;">If you haven't already, please make an account with us and then log in.</p>
-			<p style="text-align: center;"><a href="<?= $baseurl; ?>/login/" style="color: orange;">Click here to log in</a></p>
-	
+			<p style="text-align: center;"><a href="<?=$baseurl;?>/login/" style="color: orange;">Click here to log in</a></p>
+
 <?php
-	}
+}
 ?>
 
 	</div>

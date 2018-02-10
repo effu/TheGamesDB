@@ -37,6 +37,10 @@ class Stats extends AbstractEndpoint
             return $this;
         }
 
+        if (is_array($metric)) {
+            $metric = implode(",", $metric);
+        }
+
         $this->metric = $metric;
         return $this;
     }
@@ -76,6 +80,7 @@ class Stats extends AbstractEndpoint
             'human',
             'level',
             'types',
+            'metric'
         );
     }
 

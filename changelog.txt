@@ -1,0 +1,19 @@
+Enabled GD library
+Enabled short_open_tags
+
+Change this
+$searchQuery->fetch(PDO::FETCH_OBJ)
+To this
+$searchQuery->fetch(PDO::FETCH_OBJ)
+
+Change
+mysql_query($query)
+to this
+$database->query($query)
+
+change mysql_num_rows
+to 
+
+mysql_num_rows
+to
+count

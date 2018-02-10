@@ -1,51 +1,46 @@
 <?php
-	#####################################################
-	## USER INFO
-	#####################################################
-	#if ($userid)  {
-	#	$userid = mysql_real_escape_string($userid);
-	#	$query	= "SELECT * FROM users WHERE id=$userid";
-	#	$result = mysql_query($query) or die('Query failed: ' . mysql_error());
-	#	$user = mysql_fetch_object($result);
-	#}
+#####################################################
+## USER INFO
+#####################################################
+#if ($userid)  {
+#    $userid = mysql_real_escape_string($userid);
+#    $query    = "SELECT * FROM users WHERE id=$userid";
+#    $result = $database->query($query) or die('Query failed: ' . mysql_error());
+#    $user = $result->fetch(PDO::FETCH_OBJ);
+#}
 
+#####################################################
+## GET THE BANNER INFO
+#####################################################
+$id = mysql_real_escape_string($id);
+$query = "SELECT * FROM banners WHERE id=$id";
+$result = $database->query($query) or die('Query failed: ' . mysql_error());
+$banner = $result->fetch(PDO::FETCH_OBJ);
 
-	#####################################################
-	## GET THE BANNER INFO
-	#####################################################
-	$id = mysql_real_escape_string($id);
-	$query	= "SELECT * FROM banners WHERE id=$id";
-	$result = mysql_query($query) or die('Query failed: ' . mysql_error());
-	$banner = mysql_fetch_object($result);
+#####################################################
+## GET THE SERIES NAME
+#####################################################
+$translated_seriesname = "";
+$query = "SELECT * FROM translation_seriesname WHERE seriesid=$banner->keyvalue && (languageid=7 || languageid=$lid)";
+$result = $database->query($query) or die('Query failed: ' . mysql_error());
+while ($series = $result->fetch(PDO::FETCH_OBJ)) {
+    if ($translated_seriesname == "" || $series->languageid != 7) {
+        $translated_seriesname = $series->translation;
+    }
+}
+$seriesname = $translated_seriesname;
+$translated_seriesname = urlencode($translated_seriesname);
 
+#####################################################
+## GET THE SEASON NUMBER - IF Viewing a Season Banner Only
+#####################################################
+if ($bannertype == 'season' or $bannertype == 'seasonwide') {
+    $query = "SELECT * FROM tvseasons WHERE id=$seasonid";
+    $result = $database->query($query) or die('Query failed: ' . mysql_error());
+    $season = $result->fetch(PDO::FETCH_OBJ);
+}
 
-
-	#####################################################
-	## GET THE SERIES NAME
-	#####################################################
-	$translated_seriesname = "";
-	$query	= "SELECT * FROM translation_seriesname WHERE seriesid=$banner->keyvalue && (languageid=7 || languageid=$lid)";
-	$result = mysql_query($query) or die('Query failed: ' . mysql_error());
-	while($series = mysql_fetch_object($result))  {
-		if ($translated_seriesname == "" || $series->languageid != 7)  {
-			$translated_seriesname = $series->translation;
-		}
-	}
-	$seriesname = $translated_seriesname;
-	$translated_seriesname = urlencode($translated_seriesname);
-
-
-	#####################################################
-	## GET THE SEASON NUMBER - IF Viewing a Season Banner Only
-	#####################################################
-	IF ($bannertype == 'season' OR $bannertype == 'seasonwide') {
-		$query	= "SELECT * FROM tvseasons WHERE id=$seasonid";
-		$result = mysql_query($query) or die('Query failed: ' . mysql_error());
-		$season = mysql_fetch_object($result);
-	}
-
-
-IF (!$bannertype) {$bannertype = 'series';}
+if (!$bannertype) {$bannertype = 'series';}
 ?>
 
 
@@ -67,31 +62,29 @@ IF (!$bannertype) {$bannertype = 'series';}
 </script>
 
 <?php
-if ($bannertype != 'season') { 	
-echo '<img src="/banners/'.$banner->filename.'" class="banner" border="0" style="margin: 10px" name="banner"><br>';
+if ($bannertype != 'season') {
+    echo '<img src="/banners/' . $banner->filename . '" class="banner" border="0" style="margin: 10px" name="banner"><br>';
 }
 ?>
 <div class="titlesection">
 	<h1><a href="/?tab=series&id=<?=$banner->keyvalue?>"><?=$seriesname?></a></h1>
 <?php
-	if ($season->season == 0 AND $bannertype != 'series') {
-		echo "<h2>Specials</h2>";
-		echo "<h3>Banner Viewer and Tools</h3>";
-	}
-	elseif ($bannertype != 'series') {
-		echo "<h2>Season $season->season</h2>";
-		echo "<h3>Banner Viewer and Tools</h3>";
-	}
-	else {
-		echo "<h2>Banner Viewer and Tools</h2>";
-	}
+if ($season->season == 0 and $bannertype != 'series') {
+    echo "<h2>Specials</h2>";
+    echo "<h3>Banner Viewer and Tools</h3>";
+} elseif ($bannertype != 'series') {
+    echo "<h2>Season $season->season</h2>";
+    echo "<h3>Banner Viewer and Tools</h3>";
+} else {
+    echo "<h2>Banner Viewer and Tools</h2>";
+}
 ?>
 </div>
 
 <table width="100%" cellspacing="0" cellpadding="5" border="0">
 <tr>
 <td width="50%">
-	<?php if ($bannertype == 'series') { ?>
+	<?php if ($bannertype == 'series') {?>
 		<div class="section" style="display: none">
 		<h1>Add Translated Series Name</h1>
 		<p>Use this to add the series name into the banner in your preferred language.  Use your account settings to choose your preferred language.  If no translations for the series name are available, the series name will be added in English.</p>
@@ -108,12 +101,12 @@ echo '<img src="/banners/'.$banner->filename.'" class="banner" border="0" style=
 		</form>
 	</div>
 	<?php
-	}
-	if ($bannertype == 'season') { 	
-		echo '<img src="/banners/'.$banner->filename.'" class="banner" border="0" style="margin: 10px" name="banner"><br>';
-	}
-	if ($bannertype != 'season') { 	
-	?>
+}
+if ($bannertype == 'season') {
+    echo '<img src="/banners/' . $banner->filename . '" class="banner" border="0" style="margin: 10px" name="banner"><br>';
+}
+if ($bannertype != 'season') {
+    ?>
 	<div class="section">
 		<h1>Save The Banner</h1>
 		<p>Easily save the banner onto your computer.</p>
@@ -121,7 +114,7 @@ echo '<img src="/banners/'.$banner->filename.'" class="banner" border="0" style=
 			<input type="submit" name="null" value="Save" OnClick="" />
 		</form>
 	</div>
-	<?php if ($bannertype == 'series') { ?>
+	<?php if ($bannertype == 'series') {?>
 	<div class="section">
 		<h1>Revert</h1>
 		<p>Undo any changes to the banner above by clicking the revert button.</p>
@@ -130,37 +123,38 @@ echo '<img src="/banners/'.$banner->filename.'" class="banner" border="0" style=
 		</form>
 	</div>
     <?php
-	}
-    if ($adminuserlevel == 'ADMINISTRATOR')  {?>
+}
+    if ($adminuserlevel == 'ADMINISTRATOR') {
+        ?>
 	<div class="section">
 		<h1>Change Banner Language</h1>
 		<form action="" method="post" name="changelanguage" onSubmit="revert(); return false">
 			<select name="languageid" size="1" onChange="ShowEpisodeName(this.options[this.selectedIndex].value)">
 			<?php
-				## Display language selector
-				foreach ($languages AS $langid => $langname)  {
-					## If we have the currently selected language
-					if ($banner->languageid == $langid)  {
-						$selected = 'selected';
-					}
-					## Otherwise
-					else  {
-						$selected = '';
-					}
-					print "<option value=\"$langid\" class=\"$class\" $selected>$langname</option>\n";
-				}
-			?>
+## Display language selector
+        foreach ($languages as $langid => $langname) {
+            ## If we have the currently selected language
+            if ($banner->languageid == $langid) {
+                $selected = 'selected';
+            }
+            ## Otherwise
+            else {
+                $selected = '';
+            }
+            print "<option value=\"$langid\" class=\"$class\" $selected>$langname</option>\n";
+        }
+        ?>
 			</select>
 			<input type="submit" name="function" value="Change Language" class="submit">
 		</form>
 	</div>
-    <?php } }?>
+    <?php }}?>
 
 </td>
 <td width="50%">
 	<?php
-	if ($bannertype == 'season') { 	
-	?>
+if ($bannertype == 'season') {
+    ?>
 	<div class="section">
 		<h1>Save The Banner</h1>
 		<p>Easily save the banner onto your computer.</p>
@@ -169,30 +163,31 @@ echo '<img src="/banners/'.$banner->filename.'" class="banner" border="0" style=
 		</form>
 	</div>
 
-    <?php if ($adminuserlevel == 'ADMINISTRATOR')  {?>
+    <?php if ($adminuserlevel == 'ADMINISTRATOR') {
+        ?>
 	<div class="section">
 		<h1>Change Banner Language</h1>
 		<form action="" method="post" name="changelanguage" onSubmit="revert(); return false">
 			<select name="languageid" size="1" onChange="ShowEpisodeName(this.options[this.selectedIndex].value)">
 			<?php
-				## Display language selector
-				foreach ($languages AS $langid => $langname)  {
-					## If we have the currently selected language
-					if ($banner->languageid == $langid)  {
-						$selected = 'selected';
-					}
-					## Otherwise
-					else  {
-						$selected = '';
-					}
-					print "<option value=\"$langid\" class=\"$class\" $selected>$langname</option>\n";
-				}
-			?>
+## Display language selector
+        foreach ($languages as $langid => $langname) {
+            ## If we have the currently selected language
+            if ($banner->languageid == $langid) {
+                $selected = 'selected';
+            }
+            ## Otherwise
+            else {
+                $selected = '';
+            }
+            print "<option value=\"$langid\" class=\"$class\" $selected>$langname</option>\n";
+        }
+        ?>
 			</select>
 			<input type="submit" name="function" value="Change Language" class="submit">
 		</form>
 	</div>
-    <?php } }?>
+    <?php }}?>
 
 	<div class="section">
 		<h1>Mark As Preferred</h1>
